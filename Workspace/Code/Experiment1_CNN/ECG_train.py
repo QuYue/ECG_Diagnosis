@@ -15,6 +15,7 @@ import argparse
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 
+import read_config
 import read_data
 import data_process
 import models
@@ -22,28 +23,10 @@ import score_py3
 import drawing
 #%% Input Arguments
 parser = argparse.ArgumentParser(description='Experiment1(CNN): Train the model for diagnosing the heart disease by the ECG.')
-parser.add_argument('-n', '--datanum', type=int, default=6877, metavar='int',
-                    help="the number of data. (default: 2000)")
-parser.add_argument('-tr', '--trainratio', type=float, default=0.9, metavar='float',
-                    help="proportion of training sets. (default: 0.9)")
-parser.add_argument('-l', '--len', type=int, default=3000, metavar='int',
-                    help="length of the ecg data which be cutted out. (default: 3000)")
-parser.add_argument('-b', '--batch-size', type=int, default=100, metavar='int',
-                    help="the batch size for training")
-parser.add_argument('-e', '--epoch', type=int, default=50, metavar='int',
-                    help="epoch for training. (default: 50)")
-parser.add_argument('-lr', '--learn-rate', type=float, default=0.001, metavar='float',
-                    help="the learning rate. (default: 0.001)")
-parser.add_argument('-c', '--cuda', type=bool, default=True, metavar='bool',
-                    help="enables CUDA training. (default: True)")
-parser.add_argument('-s', '--show', type=bool, default=True, metavar='bool',
-                    help="show the result by matplotlib. (default: True)")
-parser.add_argument('-dp', '--data-path', type=str, default=r"E:\zhumin\TrainingSet1\TrainingSet1", metavar='str',
-                    help="the path of the data. (default: 'E:\zhumin\TrainingSet1\TrainingSet1')")
-parser.add_argument('-lp', '--label_path', type=str, default=r'E:\zhumin\TrainingSet1\TrainingSet1\REFERENCE.csv', metavar='str',
-                    help="the path of the label file. (default: 'E:\zhumin\TrainingSet1\TrainingSet1\REFERENCE.csv')")
-
+parser.add_argument('-c', '--config', type=str, default='./Config/config.ini', metavar='str',
+                    help="the path of configure file (default: './Config/config.ini')")
 Args = parser.parse_args() # the Arguments
+Args = read_config.read(Args) # read configure file
 #%% Main Function
 if __name__ == '__main__':
     #%% ########## Read Data ##########
@@ -82,7 +65,7 @@ if __name__ == '__main__':
     Accuracy= []
     F1 = []
     #%% ########## Training ##########
-    if Args.show:
+    if Args.show_plot:
         fig = plt.figure(1)
         plt.ion()
     print('Start Training')
@@ -100,17 +83,18 @@ if __name__ == '__main__':
             loss.backward()                     # backpropagation, compute gradients
             optimizer.step()                    # apply gradients
             ##### train evaluate #####
-            if step % 1 == 0:
-                if Args.cuda:
-                    pred = torch.max(output, 1)[1].cuda().data.squeeze()
-                else:
-                    pred = torch.max(output, 1)[1].data.squeeze()
-                # accuracy
-                accuracy_train = score_py3.accuracy(pred, y.data)
-                # F1
-                f1_train = score_py3.score_f1(pred, y.data)
-                # print
-                print('Epoch: %s | Train Accuracy: %.5f | Train F1: %.5f | Loss: %.2f' %(epoch, accuracy_train, f1_train, loss.data))
+            if Args.show_log:
+                if step % 1 == 0:
+                    if Args.cuda:
+                        pred = torch.max(output, 1)[1].cuda().data.squeeze()
+                    else:
+                        pred = torch.max(output, 1)[1].data.squeeze()
+                    # accuracy
+                    accuracy_train = score_py3.accuracy(pred, y.data)
+                    # F1
+                    f1_train = score_py3.score_f1(pred, y.data)
+                    # print
+                    print('Epoch: %s | Train Accuracy: %.5f | Train F1: %.5f | Loss: %.2f' %(epoch, accuracy_train, f1_train, loss.data))
         ##### Test #####
         all_y = []
         all_pred = []
@@ -130,10 +114,11 @@ if __name__ == '__main__':
         pred = torch.cat(all_pred)
         accuracy_test = score_py3.accuracy(pred, y.data)
         f1_test = score_py3.score_f1(pred, y.data)
-        print('Epoch: %s | Test Accuracy: %.5f | Test F1: %.5f' % (epoch, accuracy_test, f1_test))
+        if Args.show_log:
+            print('Epoch: %s | Train Accuracy: %.5f | Train F1: %.5f' % (epoch, accuracy_test, f1_test))
         Accuracy.append(accuracy_test)
         F1.append(f1_test)
-        if Args.show:
+        if Args.show_plot:
             drawing.draw_result([Accuracy, F1], fig, ['Accuracy', 'F1'], True)
         del x, y, pred, output
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
@@ -164,10 +149,10 @@ if __name__ == '__main__':
     test.to_csv('./Result/2.csv', index=False)
     score_py3.score('./Result/1.csv', './Result/2.csv')
     ##### save process #####
-    process = pd.DataFrame([Accuracy, F1], index=['Accuracy', 'F1'])
-    process.to_csv('./Result/process.csv')
+    log = pd.DataFrame([Accuracy, F1], index=['Accuracy', 'F1'])
+    log.to_csv('./Result/log.csv')
     ##### save figure #####
-    if Args.show:
+    if Args.show_plot:
         plt.ioff()
         plt.show()
         plt.savefig("result.jpg")
