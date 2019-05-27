@@ -1,0 +1,6 @@
+cnn_test £ºCNN
+resnet34:  resnet
+tongdao_cnn: Multi_channel_CNN
+ECG_winlstm: CNN_BiLSTM
+4_bilstm: CNN_BiLSTM_BiLSTM
+attcnn_lstm: CNN_BiLSTM_attention
