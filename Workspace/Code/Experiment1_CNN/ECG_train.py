@@ -118,7 +118,7 @@ if __name__ == '__main__':
             print('Epoch: %s | Train Accuracy: %.5f | Train F1: %.5f' % (epoch, accuracy_test, f1_test))
         Accuracy.append(accuracy_test)
         F1.append(f1_test)
-        if Args.show:
+        if Args.show_plot:
             drawing.draw_result([Accuracy, F1], fig, ['Accuracy', 'F1'], True)
         del x, y, pred, output
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
