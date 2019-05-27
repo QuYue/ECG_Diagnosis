@@ -110,8 +110,8 @@ if __name__ == '__main__':
                 pred = torch.max(output, 1)[1].data.squeeze()
             all_pred.append(pred)
             all_y.append(y.data)
-        y = torch.cat(all_y)
         pred = torch.cat(all_pred)
+        y = torch.cat(all_y)
         accuracy_test = score_py3.accuracy(pred, y.data)
         f1_test = score_py3.score_f1(pred, y.data)
         if Args.show_log:

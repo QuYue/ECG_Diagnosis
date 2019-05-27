@@ -71,7 +71,6 @@ if __name__ == '__main__':
     for epoch in range(Args.epoch):
         # load data
         loader_train = data_process.dataloader(train_x, train_y, Args.batch_size, shuffle=True)
-        break
         ##### Train #####
         for step, (x, y) in enumerate(loader_train):  # input batch data from train loader
             ##### learning #####
@@ -82,29 +81,85 @@ if __name__ == '__main__':
                 output.append(cnn_bilstm(input))
             output = torch.cat(output)
             y = torch.FloatTensor(y).type(torch.LongTensor).cuda() if Args.cuda else torch.FloatTensor(y).type(torch.LongTensor)
-            loss = loss_func(output, y)  # loss
-            # optimizer.zero_grad()  # clear gradients for next train
-            # loss.backward()  # backpropagation, compute gradients
-            # optimizer.step()  # apply gradients
-            # if step % 1 == 0:
-            #     if PARM.ifGPU:
-            #         pred = torch.max(output, 1)[1].cuda().data.squeeze()
-            #     else:
-            #         pred = torch.max(output, 1)[1].data.squeeze()
-            #     accuracy = float((pred == y).sum()) / float(y.size(0))
-            #     #            F1 = score_s(pred, y)
-            #     print('Epoch: %s |step: %s | train loss: %.2f | accuracy: %.2f '
-            #           % (epoch, step, loss.data, accuracy))
-            #     del x, y, input, output
-            #     if PARM.ifGPU: torch.cuda.empty_cache()
-            #
-            # if Args.cuda:
-            #     x = x.cuda()
-            #     y = y.cuda()
-            # cnn_bilstm.train()
-            # output = cnn_bilstm(x)
-            # loss = loss_func(output, y)  # get loss
-            # optimizer.zero_grad()  # clear gradients for backward
-            # loss.backward()  # backpropagation, compute gradients
-            # optimizer.step()  # apply gradients
+            loss = loss_func(output, y)  # get loss
+            optimizer.zero_grad()  # clear gradients for backward
+            loss.backward()  # backpropagation, compute gradients
+            optimizer.step()  # apply gradients
+            ##### train evaluate #####
+            if Args.show_log:
+                if step % 1 == 0:
+                    if Args.cuda:
+                        pred = torch.max(output, 1)[1].cuda().data.squeeze()
+                    else:
+                        pred = torch.max(output, 1)[1].data.squeeze()
+                    # accuracy
+                    accuracy_train = score_py3.accuracy(pred, y.data)
+                    # F1
+                    f1_train = score_py3.score_f1(pred, y.data)
+                    # print
+                    print('Epoch: %s | Train Accuracy: %.5f | Train F1: %.5f | Loss: %.2f' % (
+                        epoch, accuracy_train, f1_train, loss.data))
+        ##### Test #####
+        all_y = []
+        all_pred = []
+        for step, (x, y) in enumerate(loader_test):
+            output = []
+            cnn_bilstm.eval()
+            for i in x:
+                input = i.cuda() if Args.cuda else i
+                output.append(cnn_bilstm(input))
+            output = torch.cat(output)
+            y = torch.FloatTensor(y).type(torch.LongTensor).cuda() if Args.cuda else torch.FloatTensor(y).type(torch.LongTensor)
+            if Args.cuda:
+                pred = torch.max(output, 1)[1].cuda().data.squeeze()
+            else:
+                pred = torch.max(output, 1)[1].data.squeeze()
+            all_pred.append(pred)
+            all_y.append(y.data)
+        pred = torch.cat(all_pred)
+        y = torch.cat(all_y)
+        accuracy_test = score_py3.accuracy(pred, y.data)
+        f1_test = score_py3.score_f1(pred, y.data)
+        if Args.show_log:
+            print('Epoch: %s | Train Accuracy: %.5f | Train F1: %.5f' % (epoch, accuracy_test, f1_test))
+        Accuracy.append(accuracy_test)
+        F1.append(f1_test)
+        if Args.show_plot:
+            drawing.draw_result([Accuracy, F1], fig, ['Accuracy', 'F1'], True)
+        del x, y, input, pred, output
+        if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
+    print('>>>>> End Training')
+    # %% ########## Output and Save ##########
+    print('>>>>> Save Result')
+    pre = all_pred[0].data.cpu().numpy() + 1
+    test = all_y[0].data.cpu().numpy() + 1
+    ##### confusion matrix #####
+    confmat = confusion_matrix(y_true=test, y_pred=pre)
+    print(confmat)
+    ##### save csv #####
+    pre_dict = {'Recording': [], 'Result': []}
+    test_dict = {'Recording': [], 'First_label': []}
+    count = 0
+    for i in range(len(pre)):
+        pre_dict['Recording'].append(count)
+        pre_dict['Result'].append(pre[i])
 
+        test_dict['Recording'].append(count)
+        test_dict['First_label'].append(test[i])
+        count += 1
+
+    pre = pd.DataFrame(pre_dict)
+    test = pd.DataFrame(test_dict)
+    test['Second_label'] = ''
+    test['Third_label'] = ''
+    pre.to_csv('./Result/1.csv', index=False)
+    test.to_csv('./Result/2.csv', index=False)
+    score_py3.score('./Result/1.csv', './Result/2.csv')
+    ##### save process #####
+    log = pd.DataFrame([Accuracy, F1], index=['Accuracy', 'F1'])
+    log.to_csv('./Result/log.csv')
+    ##### save figure #####
+    if Args.show_plot:
+        plt.ioff()
+        plt.show()
+        plt.savefig("./Result/result.jpg")
