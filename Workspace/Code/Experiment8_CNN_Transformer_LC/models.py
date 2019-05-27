@@ -14,7 +14,7 @@ from transformer.transformer_block import TRANSFORMER
 #%% Functions
 class CNN_Transformer(nn.Module):
     def __init__(self):
-        super(CNN_Transformer,  self).__init__()
+        super(CNN_Transformer, self).__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(
                 in_channels=12,
@@ -89,14 +89,32 @@ class CNN_Transformer(nn.Module):
         x = self.dropout(x)
         x = self.transformer(self.relu(x))
         x = x[:, -1, :]
-        x = self.dropout(x)
-        x = self.networks2(x)
-        return x
+        embedding = x.reshape(1, -1)
+        x = self.networks2(embedding)
+        return x, embedding
+
+def LinkConstraints(embedding, link, weight_decay=0.1):
+    # Link Constraints
+    batch_size = len(embedding)
+    Loss = []
+    for i in range(batch_size-1):
+        for j in range(i+1, batch_size):
+            e = 1 if link[i] == link[j] else -1
+            Loss.append((embedding[i] - (e * embedding[j])).norm(2))
+    Loss = torch.stack(Loss).sum()
+    Loss = Loss * 0.5 * weight_decay
+    return Loss
 
 #%% Main Function
 if __name__ == '__main__':
-    x = np.random.randn(3, 12, 3000, 1)
-    x = torch.Tensor(x)
-    cnn_bilstm = CNN_Transformer()
-    y = cnn_bilstm(x)
-    print(y.shape)
+    e = []
+    for i in range(3):
+        x = np.random.randn(3, 12, 3000, 1)
+        x = torch.Tensor(x)
+        cnn_transformer = CNN_Transformer()
+        y, e1 = cnn_transformer(x)
+        e.append(e1)
+    print(e1.shape)
+    link = [0,1,1]
+    b = LinkConstraints(e, link)
+
