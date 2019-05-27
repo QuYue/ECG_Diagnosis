@@ -115,7 +115,7 @@ if __name__ == '__main__':
         all_y = []
         all_pred = []
         for step, (x, y) in enumerate(loader_test):
-            if Args.ifGPU:
+            if Args.cuda:
                 x = x.cuda()
                 y = y.cuda()
             cnn.eval()
