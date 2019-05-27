@@ -21,8 +21,10 @@ import models
 import score_py3
 import drawing
 #%% Input Arguments
-parser = argparse.ArgumentParser(description='Experiment1(CNN): Train the model for diagnosing the heart disease by the ECG.')
-parser.add_argument('-n', '--datanum', type=int, default=2000, metavar='int',
-                    help="the number of data. (default: 2000)")
+parser = argparse.ArgumentParser(description='Experiment2(CNN_BiLSTM): Train the model for diagnosing the heart disease by the ECG.')
+parser.add_argument('-c', '--config', type=str, default='./Config/config.ini', metavar='str',
+                    help="the path of configure file (default: './Config/config.ini')")
+Args = parser.parse_args() # the Arguments
+Args = read_config.read(Args) # read configure file
 
 Args = parser.parse_args() # the Arguments
