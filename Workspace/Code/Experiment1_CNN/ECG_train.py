@@ -22,7 +22,7 @@ import score_py3
 import drawing
 #%% Input Arguments
 parser = argparse.ArgumentParser(description='Experiment1(CNN): Train the model for diagnosing the heart disease by the ECG.')
-parser.add_argument('-n', '--datanum', type=int, default=100, metavar='int',
+parser.add_argument('-n', '--datanum', type=int, default=2000, metavar='int',
                     help="the number of data. (default: 2000)")
 parser.add_argument('-tr', '--trainratio', type=float, default=0.9, metavar='float',
                     help="proportion of training sets. (default: 0.9)")
@@ -138,17 +138,15 @@ if __name__ == '__main__':
         del x, y, pred, output
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
     print('End Training')
-    if Args.show:
-        plt.ioff()
-        plt.show()
-    #%% ########## Output ##########
+    #%% ########## Output and Save ##########
     pre = all_pred[0].data.cpu().numpy() + 1
     test = all_y[0].data.cpu().numpy() + 1
+    ##### confusion matrix #####
     confmat = confusion_matrix(y_true=test, y_pred=pre)
     print(confmat)
+    ##### save csv #####
     pre_dict = {'Recording': [], 'Result': []}
     test_dict = {'Recording': [], 'First_label': []}
-
     count = 0
     for i in range(len(pre)):
         pre_dict['Recording'].append(count)
@@ -160,13 +158,20 @@ if __name__ == '__main__':
 
     pre = pd.DataFrame(pre_dict)
     test = pd.DataFrame(test_dict)
-    # %%
     test['Second_label'] = ''
     test['Third_label'] = ''
-    # %%
     pre.to_csv('./Result/1.csv', index=False)
     test.to_csv('./Result/2.csv', index=False)
     score_py3.score('./Result/1.csv', './Result/2.csv')
+    ##### save process #####
+    process = pd.DataFrame([Accuracy, F1], index=['Accuracy', 'F1'])
+    process.to_csv('./Result/process.csv')
+    ##### save figure #####
+    if Args.show:
+        plt.ioff()
+        plt.show()
+        plt.savefig("result.jpg")
+
 
 
 
