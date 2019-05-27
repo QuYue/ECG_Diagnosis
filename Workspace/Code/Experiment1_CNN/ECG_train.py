@@ -27,17 +27,11 @@ parser.add_argument('-c', '--config', type=str, default='./Config/config.ini', m
                     help="the path of configure file (default: './Config/config.ini')")
 Args = parser.parse_args() # the Arguments
 Args = read_config.read(Args) # read configure file
-if Args.cuda:
-    print('Using GPU.')
-else:
-    print('Using CPU.')
 #%% Main Function
 if __name__ == '__main__':
     #%% ########## Read Data ##########
-    print('>>>>> Read Data')
     ECG_data, ECG_label = read_data.extract_data(read_data.read_data(Args)) # read data
     #%% ########## Data Processing ##########
-    print('>>>>> Data Processing')
     ECG_data = data_process.cut_out(ECG_data, Args.len) # cut out the ECG signals
     ECG_data = data_process.axis_change(ECG_data) # change the axis
     ECG_label = data_process.label_from_0(ECG_label) # label from 0
@@ -49,7 +43,6 @@ if __name__ == '__main__':
     train_x, train_y = data_process.to_tensor(train_x, train_y)
     test_x, test_y = data_process.to_tensor(test_x, test_y)
     #%% ########## Load Data ##########
-    print('>>>>> Load Data')
     # change to dataset
     train_dataset = Data.TensorDataset(train_x, train_y)
     test_dataset = Data.TensorDataset(test_x, test_y)
@@ -63,7 +56,6 @@ if __name__ == '__main__':
     loader_test = Data.DataLoader(test_dataset, Args.batch_size)
     del ECG_data, ECG_label, train_x, test_x, train_y, test_y
     #%% ########## Create model ##########
-    print('>>>>> Create model')
     cnn = models.CNN().cuda() if Args.cuda else models.CNN()
     # optimizer
     optimizer = torch.optim.Adam(cnn.parameters(), lr=Args.learn_rate)
@@ -76,7 +68,7 @@ if __name__ == '__main__':
     if Args.show_plot:
         fig = plt.figure(1)
         plt.ion()
-    print('>>>>> Start Training')
+    print('Start Training')
     for epoch in range(Args.epoch):
         ##### Train #####
         for step, (x, y) in enumerate(loader_train):  # input batch data from train loader
@@ -130,9 +122,8 @@ if __name__ == '__main__':
             drawing.draw_result([Accuracy, F1], fig, ['Accuracy', 'F1'], True)
         del x, y, pred, output
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
-    print('>>>>> End Training')
+    print('End Training')
     #%% ########## Output and Save ##########
-    print('>>>>> Save Result')
     pre = all_pred[0].data.cpu().numpy() + 1
     test = all_y[0].data.cpu().numpy() + 1
     ##### confusion matrix #####

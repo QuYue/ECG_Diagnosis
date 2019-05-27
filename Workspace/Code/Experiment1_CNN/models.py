@@ -4,7 +4,7 @@
 @Author  : QuYue
 @File    : models.py
 @Software: PyCharm
-Introduction: Models for diagnosing the heart disease by the ECG..
+Introduction: Models for diagnosing the heart disease by the ECG.
 """
 #%% Import Packages
 import torch
