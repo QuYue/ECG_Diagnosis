@@ -140,7 +140,7 @@ def score1(answers_csv_path, reference_csv_path):
         ref.close()
     return answers, reference
 #%%
-def score_s(answer, refernce):
+def score_f1(answer, refernce):
     L = len(answer)
     A = np.zeros((9, 9), dtype=np.float)
     F = np.zeros(9)
@@ -154,9 +154,9 @@ def score_s(answer, refernce):
     for i in range(9):
         exec('F[%s] = 2 * A[%s][%s] / (np.sum(A[%s, :]) + np.sum(A[:, %s])) '
              'if (np.sum(A[%s, :]) + np.sum(A[:, %s])) != 0 else 0' %(i, i, i, i, i, i, i))
-
     F1 = np.sum(F) / 9
     return F1
+
 def accuracy(answer, reference):
     A = float((answer == reference).sum()) / float(reference.size(0))
     return A
@@ -176,4 +176,4 @@ if __name__ == '__main__':
     for i in a.keys():
         answer.append(int(a[i][0])-1)
         refernce.append(int(b[i][0][0])-1)
-    print(score_s(answer, refernce))
+    print(score_f1(answer, refernce))
