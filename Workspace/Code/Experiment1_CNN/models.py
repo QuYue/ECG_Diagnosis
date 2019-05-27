@@ -61,7 +61,7 @@ class CNN(nn.Module):
             nn.MaxPool2d((2, 1))
         )
         self.network = nn.Sequential(
-            nn.Linear(30720, 100),  # Linear layer
+            nn.Linear(22528, 100),  # Linear layer
             nn.Dropout(0.5),      # Dropout layer
             nn.Linear(100, 60),
             nn.Dropout(0.5),
