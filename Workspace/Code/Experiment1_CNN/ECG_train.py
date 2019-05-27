@@ -22,11 +22,11 @@ import score_py3
 import drawing
 #%% Input Arguments
 parser = argparse.ArgumentParser(description='Experiment1(CNN): Train the model for diagnosing the heart disease by the ECG.')
-parser.add_argument('-n', '--datanum', type=int, default=2000, metavar='int',
+parser.add_argument('-n', '--datanum', type=int, default=6877, metavar='int',
                     help="the number of data. (default: 2000)")
 parser.add_argument('-tr', '--trainratio', type=float, default=0.9, metavar='float',
                     help="proportion of training sets. (default: 0.9)")
-parser.add_argument('-l', '--len', type=int, default=4000, metavar='int',
+parser.add_argument('-l', '--len', type=int, default=3000, metavar='int',
                     help="length of the ecg data which be cutted out. (default: 3000)")
 parser.add_argument('-b', '--batch-size', type=int, default=100, metavar='int',
                     help="the batch size for training")
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         pred = torch.cat(all_pred)
         accuracy_test = score_py3.accuracy(pred, y.data)
         f1_test = score_py3.score_f1(pred, y.data)
-        print('Epoch: %s | Train Accuracy: %.5f | Train F1: %.5f' % (epoch, accuracy_test, f1_test))
+        print('Epoch: %s | Test Accuracy: %.5f | Test F1: %.5f' % (epoch, accuracy_test, f1_test))
         Accuracy.append(accuracy_test)
         F1.append(f1_test)
         if Args.show:
