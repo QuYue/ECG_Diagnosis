@@ -38,10 +38,10 @@ parser.add_argument('-c', '--cuda', type=bool, default=True, metavar='bool',
                     help="enables CUDA training. (default: True)")
 parser.add_argument('-s', '--show', type=bool, default=True, metavar='bool',
                     help="show the result by matplotlib. (default: True)")
-parser.add_argument('-dp', '--data-path', type=str, default=r"D:\My DataBases\ECG_data\TrainingSet1", metavar='str',
-                    help="the path of the data. (default: 'D:\My DataBases\ECG_data\TrainingSet1')")
-parser.add_argument('-lp', '--label_path', type=str, default=r'D:\My DataBases\ECG_data\TrainingSet1\REFERENCE.csv', metavar='str',
-                    help="the path of the label file. (default: 'D:\My DataBases\ECG_data\TrainingSet1\REFERENCE.csv')")
+parser.add_argument('-dp', '--data-path', type=str, default=r"E:\zhumin\TrainingSet1\TrainingSet1", metavar='str',
+                    help="the path of the data. (default: 'E:\zhumin\TrainingSet1\TrainingSet1')")
+parser.add_argument('-lp', '--label_path', type=str, default=r'E:\zhumin\TrainingSet1\TrainingSet1\REFERENCE.csv', metavar='str',
+                    help="the path of the label file. (default: 'E:\zhumin\TrainingSet1\TrainingSet1\REFERENCE.csv')")
 
 Args = parser.parse_args() # the Arguments
 #%% Main Function

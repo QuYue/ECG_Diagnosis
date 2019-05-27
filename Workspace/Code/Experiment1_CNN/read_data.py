@@ -84,8 +84,8 @@ def show(data):
 if __name__ == '__main__':
     class ARGS():
         def __init__(self):
-            self.data_path = r"D:\My DataBases\ECG_data\TrainingSet1"
-            self.label_path = r'D:\My DataBases\ECG_data\TrainingSet1\REFERENCE.csv'
+            self.data_path = r"E:\zhumin\TrainingSet1\TrainingSet1"
+            self.label_path = r'E:\zhumin\TrainingSet1\TrainingSet1\REFERENCE.csv'
             self.datanum = 2000
     Args = ARGS()
     ECG_data= read_data(Args)
