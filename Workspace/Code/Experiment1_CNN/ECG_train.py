@@ -143,7 +143,7 @@ if __name__ == '__main__':
         plt.show()
     #%% ########## Output ##########
     pre = all_pred[0].data.cpu().numpy() + 1
-    test = all_y.data.cpu().numpy() + 1
+    test = all_y[0].data.cpu().numpy() + 1
     confmat = confusion_matrix(y_true=test, y_pred=pre)
     print(confmat)
     pre_dict = {'Recording': [], 'Result': []}
