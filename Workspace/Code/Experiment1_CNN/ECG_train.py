@@ -155,7 +155,7 @@ if __name__ == '__main__':
     if Args.show_plot:
         plt.ioff()
         plt.show()
-        plt.savefig("result.jpg")
+        plt.savefig("./Result/result.jpg")
 
 
 

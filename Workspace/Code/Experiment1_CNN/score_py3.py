@@ -105,7 +105,7 @@ def score(answers_csv_path, reference_csv_path):
     print("Fpc: ", Fpc)
     print("Fst: ", Fst)
 
-    with open('score.txt', 'w') as score_file:
+    with open('./Result/score.txt', 'w') as score_file:
         # print (A, file=score_file)
         print ('Total File Number: %d\n' %(np.sum(A)), file=score_file)
         print ('F11: %0.3f' %F11, file=score_file)
