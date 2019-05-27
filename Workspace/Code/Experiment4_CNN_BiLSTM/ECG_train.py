@@ -22,7 +22,7 @@ import models
 import score_py3
 import drawing
 #%% Input Arguments
-parser = argparse.ArgumentParser(description='Experiment3(Resnet): Train the model for diagnosing the heart disease by the ECG.')
+parser = argparse.ArgumentParser(description='Experiment4(CNN_BiLSTM): Train the model for diagnosing the heart disease by the ECG.')
 parser.add_argument('-c', '--config', type=str, default='./Config/config.ini', metavar='str',
                     help="the path of configure file (default: './Config/config.ini')")
 Args = parser.parse_args() # the Arguments

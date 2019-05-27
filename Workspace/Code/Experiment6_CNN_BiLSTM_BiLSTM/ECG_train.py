@@ -22,7 +22,7 @@ import models
 import score_py3
 import drawing
 #%% Input Arguments
-parser = argparse.ArgumentParser(description='Experiment5(CNN_BiLSTM_LC): Train the model for diagnosing the heart disease by the ECG.')
+parser = argparse.ArgumentParser(description='Experiment6(CNN_BiLSTM_BiLSTM): Train the model for diagnosing the heart disease by the ECG.')
 parser.add_argument('-c', '--config', type=str, default='./Config/config.ini', metavar='str',
                     help="the path of configure file (default: './Config/config.ini')")
 Args = parser.parse_args() # the Arguments
@@ -55,9 +55,9 @@ if __name__ == '__main__':
     del ECG_data, ECG_label
     # %% ########## Create model ##########
     print('>>>>> Create model')
-    cnn_bilstm = models.CNN_BiLSTM().cuda() if Args.cuda else models.CNN_BiLSTM()
+    cnn_bilstm2 = models.CNN_BiLSTM_BiLSTM().cuda() if Args.cuda else models.CNN_BiLSTM_BiLSTM()
     # optimizer
-    optimizer = torch.optim.Adam(cnn_bilstm.parameters(), lr=Args.learn_rate)
+    optimizer = torch.optim.Adam(cnn_bilstm2.parameters(), lr=Args.learn_rate)
     # loss function
     loss_func = nn.CrossEntropyLoss()
     # evaluate
@@ -75,18 +75,13 @@ if __name__ == '__main__':
         for step, (x, y) in enumerate(loader_train):  # input batch data from train loader
             ##### learning #####
             output = []
-            embedding = []
-            cnn_bilstm.train()
+            cnn_bilstm2.train()
             for i in x:
                 input = i.cuda() if Args.cuda else i
-                output0, embedding0 = cnn_bilstm(input)
-                output.append(output0)
-                embedding.append(embedding0)
+                output.append(cnn_bilstm2(input))
             output = torch.cat(output)
-            embedding = torch.cat(embedding)
-            loss_lc = models.LinkConstraints(embedding, y, weight_decay=Args.link_weight)
             y = torch.FloatTensor(y).type(torch.LongTensor).cuda() if Args.cuda else torch.FloatTensor(y).type(torch.LongTensor)
-            loss = loss_lc + loss_func(output, y)  # get loss
+            loss = loss_func(output, y)  # get loss
             optimizer.zero_grad()  # clear gradients for backward
             loss.backward()  # backpropagation, compute gradients
             optimizer.step()  # apply gradients
@@ -109,11 +104,10 @@ if __name__ == '__main__':
         all_pred = []
         for step, (x, y) in enumerate(loader_test):
             output = []
-            cnn_bilstm.eval()
+            cnn_bilstm2.eval()
             for i in x:
                 input = i.cuda() if Args.cuda else i
-                output0, _ = cnn_bilstm(input)
-                output.append(output0)
+                output.append(cnn_bilstm2(input))
             output = torch.cat(output)
             y = torch.FloatTensor(y).type(torch.LongTensor).cuda() if Args.cuda else torch.FloatTensor(y).type(torch.LongTensor)
             if Args.cuda:
