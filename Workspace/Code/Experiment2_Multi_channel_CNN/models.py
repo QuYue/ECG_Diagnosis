@@ -55,7 +55,7 @@ class MC_CNN(nn.Module):
             nn.MaxPool2d((3, 1))
         )
         self.conv4 = nn.Sequential(
-            nn.Conv2d(64, 128, (10, 1), 1, 0),
+            nn.Conv2d(64, 128, (5, 1), 1, 0),
             nn.BatchNorm2d(128),
             nn.ReLU(),
             nn.MaxPool2d((3, 1))
@@ -67,6 +67,11 @@ class MC_CNN(nn.Module):
             nn.MaxPool2d((3, 1))
         )
         self.conv6 = nn.Sequential(
+            nn.Conv2d(128, 128, (5, 1), 1, 0),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+            nn.MaxPool2d((3, 1)))
+        self.conv7 = nn.Sequential(
             nn.Conv2d(128, 256, (3, 1), 1, 0),
             nn.BatchNorm2d(256),
             nn.ReLU(),
@@ -88,11 +93,12 @@ class MC_CNN(nn.Module):
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
-        x1= self.conv4(x)
-        x =self.conv5(x1)
-        x = torch.cat((x, x1), dim=2)
+        x= self.conv4(x)
+        x =self.conv5(x)
+        # x = torch.cat((x, x1), dim=2)
         x =self.conv6(x)
-        x = nn.functional.avg_pool2d(x, 3)
+        x =self.conv7(x)
+        # x = nn.functional.avg_pool2d(x, 3)
         x = x.view(x.size(0), -1)
         output = self.network(x)
         return output
