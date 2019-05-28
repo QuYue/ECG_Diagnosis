@@ -126,13 +126,13 @@ if __name__ == '__main__':
         F1.append(f1_test)
         if Args.show_plot:
             drawing.draw_result([Accuracy, F1], fig, ['Accuracy', 'F1'], True)
-        del x, y, input, pred, output
+        del x, input, output
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
     print('>>>>> End Training')
     # %% ########## Output and Save ##########
     print('>>>>> Save Result')
-    pre = all_pred[0].data.cpu().numpy() + 1
-    test = all_y[0].data.cpu().numpy() + 1
+    pre = pred.data.cpu().numpy() + 1
+    test = y.data.cpu().numpy() + 1
     ##### confusion matrix #####
     confmat = confusion_matrix(y_true=test, y_pred=pre)
     print(confmat)
