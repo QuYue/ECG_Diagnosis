@@ -128,7 +128,7 @@ if __name__ == '__main__':
         Accuracy.append(accuracy_test)
         F1.append(f1_test)
         if Args.show_plot:
-            drawing.draw_result([Accuracy, F1], fig, ['Accuracy', 'F1'], True)
+            drawing.draw_result([Accuracy, F1], fig, ['Multi_channel_CNN Accuracy', 'Multi_channel_CNN F1'], True)
         del x, output
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
     print('>>>>> End Training')
