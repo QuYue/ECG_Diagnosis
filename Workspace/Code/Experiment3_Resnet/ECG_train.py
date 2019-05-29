@@ -72,6 +72,8 @@ if __name__ == '__main__':
     # evaluate
     Accuracy = []
     F1 = []
+    # save
+    Best_result = [0, [], []]
     # %% ########## Training ##########
     if Args.show_plot:
         fig = plt.figure(1)
@@ -128,14 +130,19 @@ if __name__ == '__main__':
         Accuracy.append(accuracy_test)
         F1.append(f1_test)
         if Args.show_plot:
-            drawing.draw_result([Accuracy, F1], fig, ['Accuracy', 'F1'], True)
-        del x,output
+            drawing.draw_result([Accuracy, F1], fig, ['Resnet Accuracy', 'Resnet F1'], True)
+        # save
+        if f1_test >= Best_result[0]:
+            Best_result[0] = f1_test
+            Best_result[1] = pred.data.cpu().numpy() + 1
+            Best_result[2] = y.data.cpu().numpy() + 1
+        del x, y, pred, output
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
     print('>>>>> End Training')
     # %% ########## Output and Save ##########
     print('>>>>> Save Result')
-    pre = pred.data.cpu().numpy() + 1
-    test = y.data.cpu().numpy() + 1
+    pre = Best_result[1]
+    test = Best_result[2]
     ##### confusion matrix #####
     confmat = confusion_matrix(y_true=test, y_pred=pre)
     print(confmat)
@@ -164,5 +171,5 @@ if __name__ == '__main__':
     ##### save figure #####
     if Args.show_plot:
         plt.ioff()
-        plt.show()
         plt.savefig("./Result/result.jpg")
+        plt.show()

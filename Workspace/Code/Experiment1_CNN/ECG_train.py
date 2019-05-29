@@ -121,7 +121,7 @@ if __name__ == '__main__':
         Accuracy.append(accuracy_test)
         F1.append(f1_test)
         if Args.show_plot:
-            drawing.draw_result([Accuracy, F1], fig, ['Accuracy', 'F1'], True)
+            drawing.draw_result([Accuracy, F1], fig, ['CNN Accuracy', 'CNN F1'], True)
         # save
         if f1_test >= Best_result[0]:
             Best_result[0] = f1_test
@@ -131,6 +131,7 @@ if __name__ == '__main__':
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
     print('End Training')
     #%% ########## Output and Save ##########
+    print('>>>>> Save Result')
     pre = Best_result[1]
     test = Best_result[2]
     ##### confusion matrix #####

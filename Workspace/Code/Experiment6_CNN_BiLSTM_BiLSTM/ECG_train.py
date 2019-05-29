@@ -125,7 +125,7 @@ if __name__ == '__main__':
         Accuracy.append(accuracy_test)
         F1.append(f1_test)
         if Args.show_plot:
-            drawing.draw_result([Accuracy, F1], fig, ['Accuracy', 'F1'], True)
+            drawing.draw_result([Accuracy, F1], fig, ['CNN_BiLSTM_BiLSTM Accuracy', 'CNN_BiLSTM_BiLSTM F1'], True)
         del x,input,output
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
     print('>>>>> End Training')
@@ -161,5 +161,5 @@ if __name__ == '__main__':
     ##### save figure #####
     if Args.show_plot:
         plt.ioff()
-        plt.show()
         plt.savefig("./Result/result.jpg")
+        plt.show()
