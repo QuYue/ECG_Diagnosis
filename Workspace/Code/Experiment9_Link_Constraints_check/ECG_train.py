@@ -135,11 +135,11 @@ if __name__ == '__main__':
                 output.append(t_output)
 
                 output0.append(t_output0)
-                embedding0.append(embedding0)
+                embedding0.append(t_embedding0)
                 output1.append(t_output1)
-                embedding1.append(embedding1)
+                embedding1.append(t_embedding1)
                 output2.append(t_output2)
-                embedding2.append(embedding2)
+                embedding2.append(t_embedding2)
 
             output = torch.cat(output)
             output0 = torch.cat(output0)
