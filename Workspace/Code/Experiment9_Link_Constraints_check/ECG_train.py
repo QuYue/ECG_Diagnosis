@@ -225,6 +225,9 @@ if __name__ == '__main__':
         if Args.cuda: torch.cuda.empty_cache()  # empty GPU memory
     print('>>>>> End Training')
     ##### save figure #####
+    log = pd.DataFrame([F1, F1_0, F1_1, F1_2], index = ['F1', 'F1_0', 'F1_1', 'F1_2'])
+    log.to_csv('./Result/log.csv')
+    ##### save figure #####
     if Args.show_plot:
         plt.ioff()
         plt.savefig("./Result/result.jpg")
